@@ -1,4 +1,109 @@
-in Srp the defination 
+General defenation of srp goes llke this:
+A class shoould only have one reponsibility 
+A class should only change ofor one reason 
+Or what you said:  things that change for the same reasons should live together and things that change for different reasons should live apart
+Here i im not very sure what "responsibility" , "reason" what really mean? i- i did some reasarch and after a bit thinking here is what i came up with
+In srp the classes can brodly of three types 
+1) LogicHandler (The "How" Class)
+Purpose: Contains the logic for specific functionalities, for single or multiple class. its for processing(logic) game mechanics.
+Why SRP Applies: This class should only focus on the logic and nothing else.
+
+2) Entity (The "What" Class)
+Purpose: Represents objects or entities in the system, with properties and methods defining their behavior and delegating complex logic to "How" classes . 
+Example: A Player, Boat, or Enemy class.
+Why SRP Applies: This class focuses solely on the attributes and behaviors of that entity, delegating complex logic to other classes
+
+3) SystemMangaer (The "Looping" Class)
+Purpose: Manages multiple entities and manage their interactions.
+Example: A GameManager that loops through all entities and applies game rules.
+Why SRP applies: This class focuses only on managing the game loop, while each entity class handles its own behavior and state.
+
+I'm not sure if this is the right way to think about it, but I want to make a few more points...
+
+Sure, but I can't think of a reason why we’d have different strategies/approaches to player movement. So why make a separate class for it?
+
+Of course, there are no hard rules for the definition I mentioned earlier, and as you pointed out, it might not be worth separating the Move method into a PlayerMovement class.
+I agree with you if this was all the system I was building, but if you consider the Move method to be a bit more complex, like this for example:
+
+public void Move(int x, int y)
+{
+    int BonusIncrement = 0;
+    BonusPositionIncrementIfEven();
+
+    void BonusPositionIncrementIfEven()
+    {
+        if (X % 2 == 0 && Y % 2 == 0)
+        {
+            BonusIncrement = 5;
+        }
+    }
+
+    X = (x + BonusIncrement) + (3 * new Random().Next(5));
+    Y = (y + BonusIncrement) + (3 * new Random().Next(5));
+
+    Console.WriteLine($"New Position: X = {X}, Y = {Y} for player {Name}");
+}
+And there could be more other methods that have their own "logic" like PlayerTalk, PlayerDance, etc.
+
+just to keep the example simple, I didn’t do that, but in reality, I would probably encapsulate X and Y by making them private setters. Then, if we actually need to modify them, we could do it through a separate SetPositionTo() method with x and y as parameters. 
+This way, it’s far less likely to cause errors, and we can add checks before changing the original X and Y (like ensuring they cannot be negative, etc.)."
+
+Here...
+Is there more than one way to solve it?
+If so, are you likely to change your mind about how you approach it?
+
+For both of these questions, my answer is NO, but I still feel that separating "logic" into a separate class helps with one crucial thing: clean, readable code. 
+My classes would be more understandable, like reading English, and the logic could be handled by other classes. 
+I think I can still call it SRP, but the level of SRP might not be that high yet, since I’m not using interfaces for it.
+
+    
+I’d like to hear your views on this, as this is just my interpretation of the definition that makes sense to me.
+Definitely, there’s a time and place for everything. For simple movement logic and other less-complex methods, I think handling it directly in the class might be betternmb
+
+
+Also there could be one more good reason to make the code like this: 
+Suppose there is a Seahorse class that needs the same logic for updating its positions like player has, Now here we can copy the logic and put in class but if i  change to change the design i have to do that in two places 
+So instead i can make a commmon interface like this
+{
+   public int X { get;  }
+   public int Y { get; }
+   public void SetPoisition(int x, int y) { x = X; y = Y; } // dont have to write this in the implememted class 
+   public void Move(int x , int y); 
+}
+
+both class can implement from it:
+public class Seahorse : IPosition
+// The move method can be like this 
+ public void Move(int x , int y ){ Movement.Move(this , x, y);}
+
+public class Player : IPosition
+// The move method can be like this 
+public void Move(int x , int y ){ Movement.Move(this , x, y);}
+
+Make my Move method ( in some external class ) like this:
+public static void Move(IPosition player, int x, int y){//Add logic here}}
+
+
+
+
+    
+Here i think ill use inheretence like this 
+{
+    public int X { get; } 
+    public int Y { get; } 
+    public abstract void SetPoisition(int x, int y){};
+}
+
+both class can inheret from it:
+public class Seahorse : Animals
+public class Player : Animals
+
+Make my move method ( in some external class ) like this:
+public static void Move(Animals player, int x, int y) // changes X and Y 
+
+    
+
+
 public interface IMovement
 {
     int X { get; }
